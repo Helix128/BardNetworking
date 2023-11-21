@@ -1,0 +1,14 @@
+D:\VSProjects\BardNetworking\bin\Debug\net7.0\BardNetworking.exe
+D:\VSProjects\BardNetworking\bin\Debug\net7.0\BardNetworking.deps.json
+D:\VSProjects\BardNetworking\bin\Debug\net7.0\BardNetworking.runtimeconfig.json
+D:\VSProjects\BardNetworking\bin\Debug\net7.0\BardNetworking.dll
+D:\VSProjects\BardNetworking\bin\Debug\net7.0\BardNetworking.pdb
+D:\VSProjects\BardNetworking\obj\Debug\net7.0\BardNetworking.GeneratedMSBuildEditorConfig.editorconfig
+D:\VSProjects\BardNetworking\obj\Debug\net7.0\BardNetworking.AssemblyInfoInputs.cache
+D:\VSProjects\BardNetworking\obj\Debug\net7.0\BardNetworking.AssemblyInfo.cs
+D:\VSProjects\BardNetworking\obj\Debug\net7.0\BardNetworking.csproj.CoreCompileInputs.cache
+D:\VSProjects\BardNetworking\obj\Debug\net7.0\BardNetworking.dll
+D:\VSProjects\BardNetworking\obj\Debug\net7.0\refint\BardNetworking.dll
+D:\VSProjects\BardNetworking\obj\Debug\net7.0\BardNetworking.pdb
+D:\VSProjects\BardNetworking\obj\Debug\net7.0\BardNetworking.genruntimeconfig.cache
+D:\VSProjects\BardNetworking\obj\Debug\net7.0\ref\BardNetworking.dll
