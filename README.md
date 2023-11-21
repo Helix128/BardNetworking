@@ -1,2 +1,2 @@
 # BardNetworking
-C# networking library.
+Experimental C# networking library.
