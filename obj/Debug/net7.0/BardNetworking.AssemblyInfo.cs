@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BardNetworking")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+13203d7d21a8585667017959137277fadb958658")]
 [assembly: System.Reflection.AssemblyProductAttribute("BardNetworking")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BardNetworking")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

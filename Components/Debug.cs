@@ -20,16 +20,13 @@ namespace BardNetworking.Components
     }
     internal class Debug
     {
-        static ConsoleColor[] consoleColors = new ConsoleColor[] { ConsoleColor.Green, ConsoleColor.Yellow, ConsoleColor.Red };
-        public static void Log(string message, LogSource source, LogType type = LogType.Info)
+        public static void Log(object message, LogSource source, LogType type = LogType.Info)
         {
 #if UNITY_EDITOR
-         UnityEngine.Debug.Log(message);
+            UnityEngine.Debug.Log("[Bard|" + source.ToString() + "|" + type.ToString() + "] " + message);
          
 #else  
-            Console.ForegroundColor = consoleColors[(int)type];
-            Console.WriteLine("[Bard|" + source.ToString() + "|" + type.ToString() + "] " + message);
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("[Bard " + source.ToString() + "|" + type.ToString().ToUpperInvariant() + "] " + message);
 #endif
         }
     }

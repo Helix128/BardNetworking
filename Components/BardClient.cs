@@ -12,7 +12,6 @@ namespace BardNetworking.Components
 	{
 		Socket client;
 
-		bool isActive = false;
         PacketReader reader;
 
         public BardClient(PacketReader reader)
@@ -22,30 +21,61 @@ namespace BardNetworking.Components
 
         public bool IsConnected()
 		{
-			return client.Connected&&isActive;
+			return client.Connected;
 		}
-		public async void Connect(string ip = "localhost", int port = 7777)
+		public async Task<bool> Connect(string ip = "localhost", int port = 7777)
 		{
 			IPHostEntry host = Dns.GetHostEntry(ip);
 			IPAddress ipAddress = host.AddressList[0];
 			IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 
-			client = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+			client = new Socket(ipAddress.AddressFamily, SocketType.Stream, BardSettings.PROTOCOL_TYPE);
 			Debug.Log("Connecting to " + remoteEP.ToString(),LogSource.Client);
-			await client.ConnectAsync(remoteEP);
-			isActive = true;
-			Debug.Log("Connected!", LogSource.Client);
-			while (client.IsConnected()&&isActive)
+			try
 			{
-				UpdateClient();
-				await Task.Delay(1);
+				await client.ConnectAsync(remoteEP);
+			}
+			catch (Exception ex)
+			{
+				try {
+					Debug.Log("Retrying connection...", LogSource.Client, LogType.Warning);
+					await client.ConnectAsync(remoteEP);
+				}
+				catch {
+                    Debug.Log("Could not connect to server.", LogSource.Client, LogType.Error);
+                    return false;
+
+                }
+				
+				}
+		
+
+				Debug.Log("Connected!", LogSource.Client);
+				ClientLoop();
+				return true;
+			
+		
+        }
+
+        async void ClientLoop()
+		{
+            while (client.IsConnected())
+            {
+                UpdateClient();
+                await Task.Delay(1);
             }
         }
-        public void Disconnect()
+
+        public async void Disconnect()
 		{
-            byte[] rawData = Encoding.UTF8.GetBytes("aa");
-            Debug.Log("Disconnecting...",LogSource.Client);
+			byte[] rawData = new byte[25];
+
 			Send(rawData,BuiltinPackets.DISCONNECT);
+			while (client.IsConnected())
+			{
+				await Task.Delay(1);
+			}
+			Debug.Log("Disconnected!", LogSource.Client);
 		}
 		private async void UpdateClient()
 		{
@@ -54,9 +84,15 @@ namespace BardNetworking.Components
 			{
 				byte[] buffer = new byte[BardSettings.MAX_PACKET_SIZE];
 				int data = await client.ReceiveAsync(buffer);
-				if (data > 0)
+				
+				while (data > 0)
 				{
-					HandlePacket(client,buffer.Take(data).ToArray());
+				
+					byte packetSize = buffer[0];
+					
+					HandlePacket(client,buffer.Take(new Range(0, packetSize+1)).ToArray());
+					buffer = buffer.Skip(packetSize).ToArray();
+					data -= packetSize;
 				}
 			}
 			catch
@@ -66,14 +102,21 @@ namespace BardNetworking.Components
 					client.Close();
 				}
 				client = null;
-				isActive = false;
+	
 			}
 		}
-		public void Send(byte[] data,byte header = 0)
-        {
+		public void Send(byte[] data, byte header = 0)
+		{
 			byte[] finalData = data.Prepend(header).ToArray();
-            client.Send(finalData);
-		}
+			finalData = finalData.Prepend((byte)(data.Length + 2)).ToArray();
+			try {
+				client.Send(finalData);
+			}
+			catch(SocketException)
+			{
+				Disconnect();
+			}
+			}
 		public void Send(string text)
 		{  
 			byte[] rawData = Encoding.UTF8.GetBytes(text);
@@ -81,7 +124,7 @@ namespace BardNetworking.Components
 		}
 		public virtual void HandlePacket(Socket sender, byte[] packet)
 		{
-            reader.onReceivedPacket?.Invoke(null, reader.ConvertPacket(sender, packet[0], packet.Skip(1).ToArray()));
+            reader.onReceivedPacket?.Invoke(null, reader.ConvertPacket(sender, packet[0],packet[1], packet.Skip(2).ToArray()));
         }
 	
 		}

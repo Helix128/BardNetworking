@@ -12,32 +12,32 @@ namespace BardNetworking
             PacketReader reader = new PacketReader();
             BardServer server = new BardServer(reader);
             server.Start();
-            BardClient[] clients = new BardClient[25];
-
+            BardClient[] clients = new BardClient[64];
+                await Task.Delay(25);
                 for (int i = 0; i < clients.Length; i++)
                 {
                     clients[i] = new BardClient(reader);
-                    clients[i].Connect();
-            
+                    await clients[i].Connect();
+
                 }
           
-                server.SendToAll("Hello, world!");
+                server.SendToAll("hi!");
+                await Task.Delay(5);
 
-        
                 for (int i = 0; i < clients.Length; i++)
                 {
-                    clients[i].Send("Hello, server!");
-
+                    clients[i].Send("Dear Karthus, \r\nI hope this finds you well.We seem to have found ourselves in a dire situation at the bottom lane. Consider casting your ultimate ability to assist us as I do believe Lee Sin has come to dive our tower.  \r\nsincerely,your bottom lane");
+                    await Task.Delay(55);
                 }
       
                 for (int i = 0; i < clients.Length; i++)
                 {
-                    clients[i].Send("Bye, server!");
-               
+                    clients[i].Send("bye,serv!");
+                    await Task.Delay(55);
                     clients[i].Disconnect();
                 }
-            
-               
+
+                await Task.Delay(4000);
                 Debug.Log("Only " + server.clients.Count + " peeps remain.",LogSource.Server);
                 while (true)
                 {

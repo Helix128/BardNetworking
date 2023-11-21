@@ -20,12 +20,13 @@ namespace BardNetworking.Components
         {
             public Socket sender;
             public byte header;
+            public byte size;
             public byte[] data;
         }
 
-        public Packet ConvertPacket(Socket socket, byte header, byte[] data)
+        public Packet ConvertPacket(Socket socket, byte size, byte header, byte[] data)
         {
-            return new Packet() { data = data, header = header, sender = socket };
+            return new Packet() { data = data, header = header,size = size, sender = socket };
         }
 
         public EventHandler<Packet> onReceivedPacket;
