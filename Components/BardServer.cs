@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
-using System.Reflection;
 
 namespace BardNetworking.Components
 {

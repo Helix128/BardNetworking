@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BardNetworking.Components
 {
