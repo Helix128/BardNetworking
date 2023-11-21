@@ -23,7 +23,7 @@ namespace BardNetworking.Components
         {
             if (packet.header == DISCONNECT)
             {
-                Debug.Log("Disconnecting client...",LogSource.Server);
+                Debug.Log("Disconnecting client...", LogSource.Server);
                 packet.sender.Close();
             }
         }

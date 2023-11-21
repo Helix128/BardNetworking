@@ -19,7 +19,7 @@ namespace BardNetworking.Components
 
         Thread serverThread;
         public BardServer(PacketReader reader)
-        {   
+        {
             this.reader = reader;
         }
 
@@ -28,14 +28,14 @@ namespace BardNetworking.Components
             IPHostEntry host = Dns.GetHostEntry("localhost");
             IPAddress ipAddress = host.AddressList[0];
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
-  
+
             server = new Socket(ipAddress.AddressFamily, SocketType.Stream, BardSettings.PROTOCOL_TYPE);
-            Debug.Log("Starting server on " + localEndPoint+".", LogSource.Client);
+            Debug.Log("Starting server on " + localEndPoint + ".", LogSource.Client);
             server.Bind(localEndPoint);
             server.Listen(32);
             Debug.Log("Server started!", LogSource.Server);
             clients = new List<Socket>();
-            serverThread = new Thread(async() =>
+            serverThread = new Thread(async () =>
             {
                 while (true && server.IsBound)
                 {
@@ -59,15 +59,16 @@ namespace BardNetworking.Components
             UpdateAllClients();
         }
         private async void AcceptConnections()
-        {  
+        {
             Socket newClient = await server.AcceptAsync();
             clients.Add(newClient);
         }
 
-       private void UpdateAllClients()
+        private void UpdateAllClients()
         {
             for (int i = 0; i < clients.Count; i++)
-            {   Socket client = clients[i];
+            {
+                Socket client = clients[i];
                 UpdateClient(client);
             }
 
@@ -76,7 +77,7 @@ namespace BardNetworking.Components
         {
             try
             {
-                if (client.IsConnected()&&client.Connected&&client.RemoteEndPoint!=null)
+                if (client.IsConnected() && client.Connected && client.RemoteEndPoint != null)
                 {
                     if (client.Available > 0)
                     {
@@ -87,7 +88,7 @@ namespace BardNetworking.Components
                         {
                             int packetSize = buffer[0];
                             index += packetSize;
-                            HandlePacket(client, buffer.Take(new Range(0, packetSize+1)).ToArray());
+                            HandlePacket(client, buffer.Take(new Range(0, packetSize + 1)).ToArray());
                             buffer = buffer.Skip(packetSize).ToArray();
                             data -= packetSize;
                         }
@@ -101,15 +102,15 @@ namespace BardNetworking.Components
             }
             catch (ObjectDisposedException e)
             {
-                clients.Remove(client); 
+                clients.Remove(client);
             }
-         
+
         }
         public void SendToAll(byte[] data, byte header = 0)
         {
             if (!server.IsBound) return;
-          	byte[] finalData = data.Prepend(header).ToArray();
-			finalData = finalData.Prepend((byte)(data.Length+2)).ToArray();
+            byte[] finalData = data.Prepend(header).ToArray();
+            finalData = finalData.Prepend((byte)(data.Length + 2)).ToArray();
             foreach (Socket client in clients)
             {
                 client.Send(finalData);
@@ -123,8 +124,8 @@ namespace BardNetworking.Components
         protected virtual void HandlePacket(Socket sender, byte[] packet)
         {
             if (packet.Length == 0) return;
-            reader.onReceivedPacket?.Invoke(null,reader.ConvertPacket(sender, packet[0],packet[1], packet.Skip(2).ToArray()));    
+            reader.onReceivedPacket?.Invoke(null, reader.ConvertPacket(sender, packet[0], packet[1], packet.Skip(2).ToArray()));
         }
-     
+
     }
 }

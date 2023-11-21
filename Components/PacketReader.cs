@@ -26,7 +26,7 @@ namespace BardNetworking.Components
 
         public Packet ConvertPacket(Socket socket, byte size, byte header, byte[] data)
         {
-            return new Packet() { data = data, header = header,size = size, sender = socket };
+            return new Packet() { data = data, header = header, size = size, sender = socket };
         }
 
         public EventHandler<Packet> onReceivedPacket;
