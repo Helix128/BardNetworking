@@ -1,2 +1,0 @@
-# BardNetworking
-C# networking library.
