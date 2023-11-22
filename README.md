@@ -1,5 +1,5 @@
 # BardNetworking
-Simple C# networking library. 
+Simple C# TCP networking library. 
 
 # Features
 - Simple server/client system (BardServer/BardClient)

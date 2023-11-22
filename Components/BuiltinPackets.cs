@@ -44,7 +44,7 @@ namespace BardNetworking.Components
                 {
                     if (insideFields[i].FieldType == typeof(PacketType))
                     {
-                        Debug.Log("Registering packet " + insideFields[i].Name + "...",LogSource.Server);
+                        Debug.Log("Loading packet " + insideFields[i].Name + "...",LogSource.Server);
                         fields.Add(insideFields[i]);
                     }
                 }
@@ -54,7 +54,9 @@ namespace BardNetworking.Components
                 field.SetValue(null, new PacketType((byte)index));
                 index++;
             }       
-            Debug.Log("Registered " + index + " packets.", LogSource.Server, LogType.Info);
+            Debug.Log(index + " packets loaded.", LogSource.Server, LogType.Info);
+
+            //Register core packets
             reader.onReceivedPacketServer += ProcessDisconnectPacket;
             reader.onReceivedPacketServer += ProcessTextPacket;
             reader.onReceivedPacketClient += ProcessTextPacket;
@@ -80,7 +82,7 @@ namespace BardNetworking.Components
             if(packet.header == ASSIGN_ID)
             {
                 BardClient client = (BardClient)x;
-                client.clientId = BitConverter.ToInt32(packet.data);
+                client.clientId = packet.ReadInt();
                 Debug.Log("Assigned client ID (" + client.clientId + ")", LogSource.Client);
             }
         }

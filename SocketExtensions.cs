@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BardNetworking.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -18,6 +19,11 @@ namespace BardNetworking
             }
             catch (SocketException) { return false; }
             catch (ObjectDisposedException) { return false; }
+            catch (NullReferenceException) { return false; }
+        }
+        public static void Send(this Socket socket, Packet packet)
+        {
+            socket.Send(packet.GetBytes());
         }
     }
 }

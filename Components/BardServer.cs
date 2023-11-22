@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading;
+
 namespace BardNetworking.Components
 {
     internal class BardServer
@@ -29,7 +30,9 @@ namespace BardNetworking.Components
         PacketReader reader;
 
         Thread serverThread;
-        
+
+      
+
         public bool IsRunning()
         {
             if (server == null)
@@ -83,7 +86,9 @@ namespace BardNetworking.Components
             Socket newClient = await server.AcceptAsync();
             clients.Add(new Client(newClient,clientIndex));
             connections.Add(clientIndex, newClient);
-            Send(newClient,BitConverter.GetBytes(clientIndex),BuiltinPackets.ASSIGN_ID);
+            Packet idPacket = new Packet(server, BuiltinPackets.ASSIGN_ID);
+            idPacket.Write(clientIndex);
+            Send(newClient,idPacket);
             Debug.Log("Client with id " + clientIndex + " connected.",LogSource.Server);
             clientIndex++;
         }
@@ -145,6 +150,18 @@ namespace BardNetworking.Components
             finalData = finalData.Prepend((byte)(data.Length + 2)).ToArray();
             connections[target].Send(finalData);
         }
+
+        public void Send(Socket target, Packet packet)
+        {
+            if (!server.IsBound) return;
+            target.Send(packet);
+        }
+        public void Send(int target, Packet packet)
+        {
+            if (!server.IsBound) return;
+            connections[target].Send(packet);
+        }
+
         public void SendToAll(byte[] data, byte header = 0)
         {
             if (!server.IsBound) return;
@@ -153,6 +170,14 @@ namespace BardNetworking.Components
             foreach (Client client in clients.ToList())
             {
                 client.socket.Send(finalData);
+            }
+        }
+        public void SendToAll(Packet packet)
+        {
+            if (!server.IsBound) return;
+            foreach (Client client in clients.ToList())
+            {
+                client.socket.Send(packet);
             }
         }
         public void SendToAll(string text)
@@ -164,7 +189,7 @@ namespace BardNetworking.Components
         {
             if (packet.Length == 0) return;
 
-            reader.onReceivedPacketServer?.Invoke(this, reader.ConvertPacket(sender, packet[0], packet[1], packet.Skip(2).ToArray()));
+            reader.onReceivedPacketServer?.Invoke(this, reader.ConvertPacket(sender,packet));
         }
 
     }

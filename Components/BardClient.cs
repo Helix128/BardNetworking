@@ -17,6 +17,7 @@ namespace BardNetworking.Components
         public int clientId = -1;
 
         Thread clientThread;
+
         public BardClient(PacketReader reader)
         {
             this.reader = reader;
@@ -32,6 +33,14 @@ namespace BardNetworking.Components
         }
         public void Connect(string ip = "localhost", int port = 7777)
         {
+            if (client != null)
+            {
+                if (client.IsConnected())
+                {
+                    Debug.Log("Client is already connected!", LogSource.Client);
+                    return;
+                }
+            }
             clientThread = new Thread(async () =>
             {
                 IPHostEntry host = Dns.GetHostEntry(ip);
@@ -67,7 +76,7 @@ namespace BardNetworking.Components
 
         async void ClientLoop()
         {
-            while (client.IsConnected())
+            while (client.IsConnected()&&client!=null)
             {
                 UpdateClient();
                 await Task.Delay(1);
@@ -78,9 +87,8 @@ namespace BardNetworking.Components
         {
             if (client.Connected)
             {
-                byte[] rawData = new byte[25];
-
-                Send(rawData, BuiltinPackets.DISCONNECT);
+                Packet dsPacket = new Packet(client, BuiltinPackets.DISCONNECT);
+                Send(dsPacket);
                 while (client.IsConnected())
                 {
                     await Task.Delay(1);
@@ -93,16 +101,17 @@ namespace BardNetworking.Components
             }
         }
         private async void UpdateClient()
-        {
+        { 
             if (client == null) return;
+
             try
-            {
+            {  
                 byte[] buffer = new byte[BardSettings.MAX_PACKET_SIZE];
                 int data = await client.ReceiveAsync(buffer, SocketFlags.None);
                 while (data > 0)
                 {
                     byte packetSize = buffer[0];
-                    HandlePacket(client, buffer.Take(packetSize + 1).ToArray());
+                    HandlePacket(client, buffer.Take(packetSize).ToArray());
                     buffer = buffer.Skip(packetSize).ToArray();
                     data -= packetSize;
                 }
@@ -110,42 +119,28 @@ namespace BardNetworking.Components
             catch (ObjectDisposedException)
             {
                 client = null;
-                Debug.Log("ObjectDisposedException: Removing client...", LogSource.Client, LogType.Warning);
             }
             catch (SocketException)
             {
-                Debug.Log("SocketException: Closing client...", LogSource.Client, LogType.Warning);
                 if (client != null)
                 {
                     client.Close();
                 }
+                client = null;
             }
-            catch
+            catch (Exception e)
             {
-                Debug.Log("Unknown error.", LogSource.Client, LogType.Error);
+                Debug.Log("Unhandled exception: " + e, LogSource.Client, LogType.Error);
             }
+      
         }
-        public void Send(byte[] data, byte header = 0)
+        public void Send(Packet packet)
         {
-            byte[] finalData = data.Prepend(header).ToArray();
-            finalData = finalData.Prepend((byte)(data.Length + 2)).ToArray();
-            try
-            {
-                client.Send(finalData);
-            }
-            catch (SocketException)
-            {
-                Disconnect();
-            }
-        }
-        public void Send(string text)
-        {
-            byte[] rawData = Encoding.UTF8.GetBytes(text);
-            Send(rawData, BuiltinPackets.TEXT);
+            client.Send(packet);
         }
         public virtual void HandlePacket(Socket sender, byte[] packet)
         {
-            reader.onReceivedPacketClient?.Invoke(this, reader.ConvertPacket(sender, packet[0], packet[1], packet.Skip(2).ToArray()));
+            reader.onReceivedPacketClient?.Invoke(this, new Packet(sender,packet));
         }
 
     }
