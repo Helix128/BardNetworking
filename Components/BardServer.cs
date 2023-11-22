@@ -19,7 +19,6 @@ namespace BardNetworking.Components
         {
             public int id;
             public Socket socket;
-
             public Client(Socket socket, int id)
             {
                 this.socket = socket;
@@ -51,7 +50,6 @@ namespace BardNetworking.Components
                 IPHostEntry host = Dns.GetHostEntry("localhost");
                 IPAddress ipAddress = host.AddressList[0];
                 IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
-
                 server = new Socket(ipAddress.AddressFamily, SocketType.Stream, BardSettings.PROTOCOL_TYPE);
                 Debug.Log("Starting server on " + localEndPoint + ".", LogSource.Client);
                 server.Bind(localEndPoint);
@@ -65,8 +63,7 @@ namespace BardNetworking.Components
                     await Task.Delay(1);
                 }
             });
-            serverThread.Start();
-         
+            serverThread.Start();  
         }
 
         public void Stop()
@@ -125,7 +122,6 @@ namespace BardNetworking.Components
                 {
                     connections.Remove(client.id);
                     clients.Remove(client);
-
                 }
             }
             catch (ObjectDisposedException e)

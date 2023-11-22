@@ -51,7 +51,6 @@ namespace BardNetworking.Components
             }
             foreach (FieldInfo field in fields)
             {
-
                 field.SetValue(null, new PacketType((byte)index));
                 index++;
             }       

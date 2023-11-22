@@ -32,7 +32,8 @@ namespace BardNetworking.Components
         }
         public void Connect(string ip = "localhost", int port = 7777)
         {
-            clientThread = new Thread(async () => {
+            clientThread = new Thread(async () =>
+            {
                 IPHostEntry host = Dns.GetHostEntry(ip);
                 IPAddress ipAddress = host.AddressList[0];
                 IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
@@ -59,20 +60,13 @@ namespace BardNetworking.Components
                         client = null;
                         return;
                     }
-
                 }
-
-
-           
             });
             clientThread.Start();
-        
-
-
         }
 
         async void ClientLoop()
-        {   
+        {
             while (client.IsConnected())
             {
                 UpdateClient();
@@ -101,23 +95,20 @@ namespace BardNetworking.Components
         private async void UpdateClient()
         {
             if (client == null) return;
-
             try
             {
                 byte[] buffer = new byte[BardSettings.MAX_PACKET_SIZE];
-                int data = await client.ReceiveAsync(buffer,SocketFlags.None);
-
+                int data = await client.ReceiveAsync(buffer, SocketFlags.None);
                 while (data > 0)
                 {
-
                     byte packetSize = buffer[0];
-
-                    HandlePacket(client, buffer.Take(packetSize+1).ToArray());
+                    HandlePacket(client, buffer.Take(packetSize + 1).ToArray());
                     buffer = buffer.Skip(packetSize).ToArray();
                     data -= packetSize;
                 }
             }
-            catch (ObjectDisposedException) {
+            catch (ObjectDisposedException)
+            {
                 client = null;
                 Debug.Log("ObjectDisposedException: Removing client...", LogSource.Client, LogType.Warning);
             }
@@ -129,7 +120,8 @@ namespace BardNetworking.Components
                     client.Close();
                 }
             }
-            catch{
+            catch
+            {
                 Debug.Log("Unknown error.", LogSource.Client, LogType.Error);
             }
         }
