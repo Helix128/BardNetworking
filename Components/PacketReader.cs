@@ -4,32 +4,47 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using System.Reflection;
 
 namespace BardNetworking.Components
 {
-    internal class PacketReader
+    public class Packet : EventArgs
     {
-        public PacketReader(bool registerDefaultPackets = true)
+        public Socket sender;
+        public byte header;
+        public byte size;
+        public byte[] data;
+        public Packet(Socket sender, byte size, byte header, byte[] data)
         {
-            if (registerDefaultPackets)
-            {
-                BuiltinPackets.RegisterBuiltinPackets(this);
-            }
+            this.sender = sender;
+            this.header = header;
+            this.size = size;
+            this.data = data;
         }
-        public class Packet : EventArgs
+        public byte[] GetBytes()
         {
-            public Socket sender;
-            public byte header;
-            public byte size;
-            public byte[] data;
+            byte[] bytes = data;
+            data.Prepend(header);
+            data.Prepend((byte)(data.Length+2));
+            return bytes;
+        }
+    }
+
+    internal class PacketReader
+    {   
+        public PacketReader()
+        {
+                BuiltinPackets.RegisterPackets(this);
         }
 
+     
         public Packet ConvertPacket(Socket socket, byte size, byte header, byte[] data)
         {
-            return new Packet() { data = data, header = header, size = size, sender = socket };
+            return new Packet(socket,size,header,data);
         }
 
-        public EventHandler<Packet> onReceivedPacket;
+        public EventHandler<Packet> onReceivedPacketClient;
+        public EventHandler<Packet> onReceivedPacketServer;
 
     }
 }
