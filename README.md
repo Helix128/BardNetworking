@@ -1,4 +1,4 @@
-# BardNetworking
+# BardNetworking (w.i.p)
 Simple C# TCP networking library. 
 
 # Features
