@@ -1,5 +1,6 @@
 # BardNetworking (w.i.p)
-Simple C# TCP networking library. 
+Simple C# TCP networking library.
+(Warning: It is incomplete and probably unstable in certain cases.)  
 
 # Features
 - Simple server/client system (BardServer/BardClient)
