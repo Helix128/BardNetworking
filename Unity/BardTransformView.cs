@@ -4,15 +4,5 @@ using UnityEngine;
 
 public class BardTransformView : NetworkBehaviour
 {
-    
-    void Start()
-    {
-        
-    }
-
-  
-    void Update()
-    {
-        
-    }
+//TODO
 }
