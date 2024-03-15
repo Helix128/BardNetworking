@@ -79,7 +79,7 @@ namespace BardNetworking.Components
 
                 byte[] temp = new byte[BardSettings.MAX_PACKET_SIZE];
                 Array.Copy(rawdata, temp, temp.Length);
-            data.AddRange(temp);
+            dataList.AddRange(temp);
             
         }
         public T Read<T>()
